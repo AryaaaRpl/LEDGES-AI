@@ -108,13 +108,18 @@ app.post('/detect', upload.single('image'), async (req, res) => {
     app.post('/chat', async (req, res) => {
         try {
             const userInput = req.body.message;
+            console.log("Received message:", userInput);
+            
             // Proses input pengguna...
-            res.send({ reply: "Your response here" });
+            const response = { reply: "Your response here" }; // Contoh respons
+            console.log("Sending response:", response);
+            res.json(response); // Pastikan menggunakan res.json
         } catch (error) {
-            console.error(error);
-            res.status(500).send({ error: "An error occurred while processing your request." });
+            console.error("Error occurred:", error);
+            res.status(500).send("An error occurred while processing your request."); // Mengirim pesan teks biasa
         }
     });
+    
     
 });
 
