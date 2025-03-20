@@ -105,5 +105,16 @@ app.post('/detect', upload.single('image'), async (req, res) => {
        console.error(error);
        res.status(500).send({ error: "Error processing image." });
     }
+    app.post('/chat', async (req, res) => {
+        try {
+            const userInput = req.body.message;
+            // Proses input pengguna...
+            res.send({ reply: "Your response here" });
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({ error: "An error occurred while processing your request." });
+        }
+    });
+    
 });
 
