@@ -3,7 +3,7 @@ const https = require('https');
 const multer = require('multer'); 
 
 const app = express();
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 5000;
 
 // Middleware untuk parsing JSON
 app.use(express.json());
