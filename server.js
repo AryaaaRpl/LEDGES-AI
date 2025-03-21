@@ -7,11 +7,6 @@ const PORT = process.env.PORT || 8000;
 
 // Middleware untuk parsing JSON
 app.use(express.json());
-const path = require('path');
-
-// Middleware untuk menyajikan file statis dari folder utama
-app.use(express.static(path.join(__dirname)));
-
 
 app.post('/chat', (req, res) => {
     const userInput = req.body.message;
