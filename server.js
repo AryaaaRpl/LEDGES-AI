@@ -1,24 +1,28 @@
 const express = require('express');
 const https = require('https');
-const multer = require('multer'); 
+const multer = require('multer');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// Middleware untuk parsing JSON
+// Middleware for parsing JSON
 app.use(express.json());
-const path = require('path');
 
-// Middleware untuk menyajikan file statis dari folder utama
+// Middleware to serve static files from the main folder
 app.use(express.static(path.join(__dirname)));
 
+// Setup multer for image uploads
+const storage = multer.memoryStorage(); // Store files in memory
+const upload = multer({ storage });
 
+// Endpoint to receive messages from the frontend (chat)
 app.post('/chat', (req, res) => {
     const userInput = req.body.message;
 
-    // Format payload yang benar
+    // Correct payload format
     const payload = JSON.stringify({
-        model: "llama-3.1-8b-instant", // Ganti dengan model yang valid
+        model: "llama-3.1-8b-instant", // Replace with a valid model
         messages: [{
             role: "user",
             content: userInput
@@ -27,11 +31,11 @@ app.post('/chat', (req, res) => {
 
     const options = {
         hostname: 'api.groq.com',
-        path: '/openai/v1/chat/completions', // Endpoint yang benar
+        path: '/openai/v1/chat/completions', // Correct endpoint
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer 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` // Ganti dengan API key Anda
+            'Authorization': `Bearer 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` // Replace with your API key
         }
     };
 
@@ -48,7 +52,7 @@ app.post('/chat', (req, res) => {
                     const parsedData = JSON.parse(data);
                     res.json({ reply: parsedData.choices[0].message.content });
                 } catch (error) {
-                    res.status(500).json({ error: "Gagal memproses respons API" });
+                    res.status(500).json({ error: "Failed to process API response" });
                 }
             } else {
                 res.status(apiResponse.statusCode).json({ error: `Error: ${data}` });
@@ -57,68 +61,33 @@ app.post('/chat', (req, res) => {
     });
 
     apiRequest.on('error', (error) => {
-        res.status(500).json({ error: `Koneksi gagal: ${error.message}` });
+        res.status(500).json({ error: `Connection failed: ${error.message}` });
     });
 
     apiRequest.write(payload);
     apiRequest.end();
 });
 
-app.listen(PORT, () => {
-    console.log(`Server berjalan di http://localhost:${PORT}`);
-});
-
-
-// Middleware untuk parsing JSON
-app.use(express.json());
-
-// Middleware untuk menyajikan file statis dari folder utama
-app.use(express.static(path.join(__dirname)));
-
-
-// Setup multer untuk mengunggah gambar
-const storage = multer.memoryStorage(); // Simpan file dalam memori
-const upload = multer({ storage });
-
-// Endpoint untuk menerima pesan dari frontend (chat)
-app.post('/chat', (req, res) => {
-    const userInput = req.body.message;
-
-});
-
-// Endpoint untuk mendeteksi gambar yang diunggah
+// Endpoint to detect uploaded images
 app.post('/detect', upload.single('image'), async (req, res) => {
     if (!req.file) return res.status(400).send({ error: "No image uploaded." });
 
     try {
-       const imageBuffer = req.file.buffer;
+        const imageBuffer = req.file.buffer;
 
-       // Logika untuk memproses gambar dengan AI (deteksi objek)
-       // Misalnya menggunakan API deteksi objek atau model AI lokal
+        // Logic to process the image with AI (object detection)
+        // For example, using an object detection API or local AI model
 
-       const detectedObjects = "Detected objects from the image"; // Ganti dengan hasil deteksi
+        const detectedObjects = "Detected objects from the image"; // Replace with detection results
 
-       res.send({ reply: detectedObjects }); // Kirim kembali hasil deteksi ke frontend
+        res.send({ reply: detectedObjects }); // Send detection results back to the frontend
 
     } catch (error) {
-       console.error(error);
-       res.status(500).send({ error: "Error processing image." });
+        console.error(error);
+        res.status(500).send({ error: "Error processing image." });
     }
-    app.post('/chat', async (req, res) => {
-        try {
-            const userInput = req.body.message;
-            console.log("Received message:", userInput);
-            
-            // Proses input pengguna...
-            const response = { reply: "Your response here" }; // Contoh respons
-            console.log("Sending response:", response);
-            res.json(response); // Pastikan menggunakan res.json
-        } catch (error) {
-            console.error("Error occurred:", error);
-            res.status(500).send("An error occurred while processing your request."); // Mengirim pesan teks biasa
-        }
-    });
-    
-    
 });
 
+app.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
+});
