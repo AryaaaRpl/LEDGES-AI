@@ -3,10 +3,15 @@ const https = require('https');
 const multer = require('multer'); 
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8000;
 
 // Middleware untuk parsing JSON
 app.use(express.json());
+const path = require('path');
+
+// Middleware untuk menyajikan file statis dari folder utama
+app.use(express.static(path.join(__dirname)));
+
 
 app.post('/chat', (req, res) => {
     const userInput = req.body.message;
@@ -76,17 +81,10 @@ const storage = multer.memoryStorage(); // Simpan file dalam memori
 const upload = multer({ storage });
 
 // Endpoint untuk menerima pesan dari frontend (chat)
-app.post('/chat', async (req, res) => {
-    try {
-        const userInput = req.body.message;
-        // Process input...
-        res.json({ reply: "Your response here" }); // Send valid JSON
-    } catch (error) {
-        console.error("Error occurred:", error);
-        res.status(500).json({ error: "An error occurred while processing your request." }); // Return JSON on error
-    }
-});
+app.post('/chat', (req, res) => {
+    const userInput = req.body.message;
 
+});
 
 // Endpoint untuk mendeteksi gambar yang diunggah
 app.post('/detect', upload.single('image'), async (req, res) => {
@@ -106,6 +104,21 @@ app.post('/detect', upload.single('image'), async (req, res) => {
        console.error(error);
        res.status(500).send({ error: "Error processing image." });
     }
+    app.post('/chat', async (req, res) => {
+        try {
+            const userInput = req.body.message;
+            console.log("Received message:", userInput);
+            
+            // Proses input pengguna...
+            const response = { reply: "Your response here" }; // Contoh respons
+            console.log("Sending response:", response);
+            res.json(response); // Pastikan menggunakan res.json
+        } catch (error) {
+            console.error("Error occurred:", error);
+            res.status(500).send("An error occurred while processing your request."); // Mengirim pesan teks biasa
+        }
+    });
+    
     
 });
 
