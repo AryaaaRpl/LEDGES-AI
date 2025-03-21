@@ -158,6 +158,28 @@
             
             document.getElementById('userInput').value = '';
 
+            fetch(apiUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: userInput }),
+})
+.then(response => {
+    return response.text(); // Get raw response as text
+})
+.then(text => {
+    console.log("Raw response:", text); // Log the raw response
+    try {
+        const data = JSON.parse(text); // Try parsing as JSON
+        console.log("Parsed data:", data);
+        // Handle the parsed data here
+    } catch (error) {
+        console.error("Failed to parse JSON:", error);
+        // Handle the error appropriately (e.g., show an error message)
+    }
+})
+.catch(error => console.error("Fetch error:", error));
+
+
             // Tampilkan animasi loading
             document.getElementById('loading').style.display = 'block';
 
